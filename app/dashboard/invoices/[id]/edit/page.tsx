@@ -6,7 +6,7 @@ type PageParamsType = {
   params: {id: string}
 }
 export default async function Page({params}: PageParamsType) {
-  const { id } = await params;
+  const { id } = params;
   const [ invoice, customers ] = await Promise.all([
     fetchInvoiceById(id),
     fetchCustomers()
