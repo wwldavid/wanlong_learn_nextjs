@@ -21,6 +21,7 @@ export async function createInvoice(formData:FormData){
     amount: formData.get('amount'),
     status: formData.get('status'),
   }
+
   const {customerId, amount, status} = CreateInvoice.parse(rawFormData)
   const amountInCents = amount*100
   const date = new Date().toISOString().split('T')[0]
@@ -42,11 +43,16 @@ export async function updateInvoice(id: string, formData: FormData){
   })
   const amountInCents = amount * 100
 
-  await sql`
+  try {
+    await sql`
     UPDATE invoices 
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}
   `
+  } catch (error) {
+    return {message: 'Database Error: insert fail'}
+  }
+  
   revalidatePath('/dashboard/invoices')
   redirect('/dashboard/invoices')
 }
