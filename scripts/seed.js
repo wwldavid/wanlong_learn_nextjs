@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -52,9 +53,11 @@ async function seedDatabase() {
 
     // 2️⃣ Insert data into users table
     for (const user of users) {
+      await client.sql`DELETE FROM users;`;
+      const hashedPassword = await bcrypt.hash(user.password, 10);
       await client.sql`
         INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${user.password})
+        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
     }
